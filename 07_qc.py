@@ -7,9 +7,7 @@
 
 # Stage 07: quality checks per session. Numbers first (head motion, signal
 # to noise, alignment score, atlas coverage), then pictures for eyeballing
-# the alignment. Everything lands in one summary table row per run so
-# sessions can be compared across the cycle: a quality measure that itself
-# tracks cycle phase would contaminate the analysis, so catch it early.
+# the alignment. The generated summary table compares sessions across the cycle.
 
 import json, os, subprocess, sys
 import numpy as np
