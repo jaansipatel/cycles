@@ -6,9 +6,7 @@
 #SBATCH -o logs/02_topup_%a.out
 #SBATCH --array=0-0
 
-# Stage 02: the AP and PA scans are stretched in opposite directions, and
-# topup uses that mismatch to work out the distortion and undo it in both
-# rest runs. Runs before motion correction so that step sees clean images.
+# Stage 02: Topup runs before motion correction so that step sees clean images.
 
 set -euo pipefail
 source "$(dirname "$0")/config.sh"
@@ -50,7 +48,7 @@ for run in 1 2; do
                    --out=${out}/$(basename "${img%.nii.gz}")_topup
     done
 
-    # rough plausibility check: a correction this strong usually means the
+    # rough plausibility check: a correction this strong would probably mean the
     # pairing or a sign in acqparams is wrong
     p98=$(fslstats fieldmap_hz_r${run} -a -P 98)
     echo "run-${run} fieldmap |Hz| p98 = $p98"
