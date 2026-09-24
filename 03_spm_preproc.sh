@@ -6,16 +6,9 @@
 #SBATCH -o logs/03_spm_%a.out
 #SBATCH --array=0-0
 
-# Stage 03: SPM motion correction plus 4 mm smoothing on the topup-corrected
-# runs. Both runs are corrected together so they line up with each other,
-# but they stay separate files afterward.
+# Stage 03: SPM motion correction plus 4 mm smoothing on the topup-corrected runs.
 #
-# No slice timing correction: with a 450 ms TR the slices are so close in
-# time that the shift can't matter at the slow frequencies we analyze, and
-# the lab script that would fix it mislabels the slice order for this
-# sequence anyway. Skipping is the safer call.
-#
-# No unwarp: stage 02 already fixed the distortion, so this step only needs
+# No unwarp: stage 02 already fixed the distortion, so this step should only need
 # to track head motion, which stage 08 reuses as noise regressors.
 
 set -euo pipefail
