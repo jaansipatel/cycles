@@ -4,7 +4,7 @@ Preprocessing and functional connectivity for a dense-sampling menstrual cycle n
 
 The design closely follows the methodology of Pritschet, Santander et al. (2020, *NeuroImage*).
 
-## Study design this assumes
+## Study design
 
 - One subject, many sessions (`sub-01`, `ses-006` and onward)
 - Two resting-state runs per session, 1000 volumes each
@@ -70,7 +70,7 @@ For a first session, it is best to run the stages interactively on a compute nod
 **115 regions.** 100 Schaefer cortical parcels (7-network ordering) plus 15 subcortical regions from Harvard-Oxford. `atlas115_labels.tsv` indicates choices on node count, ordering, and network assignment.
 
 
-### Where the reference code differs from its paper
+### Changes from reference papers
 
 1. The frequency band is isolated with a wavelet transform, not a bandpass filter
 2. Intensity scaling divides by the median, not the mean
