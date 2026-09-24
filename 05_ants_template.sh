@@ -9,8 +9,6 @@
 # participant, then work out how each session's T1 maps onto that average,
 # and how the standard MNI brain maps onto it. With one person scanned many
 # times, their own average is a better common space than a population brain.
-# Not a SLURM array: the average needs every session at once. Rerun when new
-# sessions land; sessions already registered are skipped.
 #
 # Files left behind for stage 06b to chain together:
 #   MNI -> template:      mni_to_tpl_1Warp.nii.gz + mni_to_tpl_0GenericAffine.mat
