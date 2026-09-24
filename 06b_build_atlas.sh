@@ -6,11 +6,9 @@
 #SBATCH --array=0-0
 
 # Stage 06b: build the 115-region atlas once (100 Schaefer cortical regions
-# plus 15 subcortical ones from Harvard-Oxford), write the labels table that
-# stage 08 treats as the source of truth, then carry the atlas into each
-# run's own space through the chain of alignments:
+# plus 15 subcortical ones from Harvard-Oxford), then carry the labels into
+# each run's own space through the chain of alignments:
 #   MNI -> subject average -> session T1 -> functional
-# The atlas is what moves; the functional data never gets resampled.
 
 set -euo pipefail
 source "$(dirname "$0")/config.sh"
@@ -84,9 +82,7 @@ for run in 1 2; do
         -t "${ants_dir}/mni_to_tpl_1Warp.nii.gz" \
         -t "${ants_dir}/mni_to_tpl_0GenericAffine.mat"
 
-    # bring the FreeSurfer segmentation along too. It already lives in this
-    # session's T1 space, so only the last step of the chain applies. Stage
-    # 08 cuts its white matter and CSF masks from this file.
+    # bring the FreeSurfer segmentation along too
     antsApplyTransforms -d 3 -i "${fs_dir}/${subject}_${ses}/mri/aseg.nii.gz" \
         -r "$ref" -o "${out}/aseg_run-${run}_native.nii.gz" -n GenericLabel \
         -t ["$bbr",1]
