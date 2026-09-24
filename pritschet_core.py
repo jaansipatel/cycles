@@ -1,8 +1,7 @@
 """Signal-processing functions for the cycles pipeline, matched to the code
 behind Pritschet and Santander 2020 (tsantander/PritschetSantander2020_NI_Hormones).
 
-Four places where their code differs from what the paper says, kept on
-purpose because the code is what produced the published results:
+Four places where their code differs from what the paper says:
   1. the frequency band is isolated with wavelets, not a bandpass filter
   2. intensity scaling divides by the median, not the mean
   3. the detrending step hits the noise regressors too, not just the data
