@@ -9,12 +9,7 @@
 # Stage 04: FreeSurfer segmentation of each session's T1. Stage 08 cuts its
 # white matter and CSF masks from the labels this produces. FreeSurfer was
 # chosen over SPM for the job because its labels are sharper and steadier
-# across sessions, and a segmentation that wobbles session to session could
-# masquerade as a cycle effect.
-#
-# Not done here: extra bias correction before recon-all. Its built-in
-# correction has handled these T1s fine; revisit if QC shows patchy white
-# matter in any session.
+# across sessions.
 
 set -euo pipefail
 source "$(dirname "$0")/config.sh"
