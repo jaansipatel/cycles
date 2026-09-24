@@ -4,11 +4,11 @@
 
 # ---- people and places ----
 lab_root=/orcd/data/ldlewis/001
-work_root=${lab_root}/users/jpatel/cycles                    # everything we produce goes under here
+work_root=${lab_root}/users/jpatel/cycles                    
 raw_root=${work_root}/nifty                                  # converted scans; stage 01 finds them with or without per-session folders
 bids_root=${work_root}/bids
 deriv_root=${work_root}/derivatives
-code_dir=${work_root}/code                                   # scripts + sessions.txt live here
+code_dir=${work_root}/code                                   # scripts + sessions.txt  here
 log_dir=${work_root}/logs
 
 # ---- subject / sessions ----
