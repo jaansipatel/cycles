@@ -7,11 +7,6 @@
 
 # Stage 09: connectivity per run, one 115 x 115 matrix of correlations
 # between region signals, transformed so values compare fairly across runs.
-# The paper used coherence instead, but stage 08 already restricted the
-# signals to the band coherence would have isolated, so plain correlation
-# was the settled choice and keeps the later graph work simpler.
-# Runs stay separate; a session average is also written for the hormone
-# models. Graph measures live in the analysis notebooks, not here.
 
 import json, os, subprocess
 import numpy as np
