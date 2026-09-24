@@ -6,15 +6,14 @@
 #SBATCH --array=0-0            # raise this as sessions are added
 
 # Stage 01: sort one session of converted scans into BIDS folders and check
-# the header fields the rest of the pipeline relies on. Files are copied,
-# never moved, so the raw folder stays untouched.
+# the header fields the rest of the pipeline relies on.
 
 set -euo pipefail
 source "$(dirname "$0")/config.sh"
 
 ses_raw=$(session_from_array)                 # e.g. cycles006
 ses=ses-${ses_raw#cycles}                     # e.g. ses-006
-# the raw folder has moved before, so try the likely layouts one by one
+
 src=""
 for cand in "${raw_root}/${ses_raw}/mri/nifty" "${raw_root}/${ses_raw}" "${raw_root}"; do
     if compgen -G "${cand}/run_*_T1_MEMPRAGE*.nii*" > /dev/null; then src=$cand; break; fi
