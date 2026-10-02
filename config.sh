@@ -1,6 +1,5 @@
 #!/bin/bash
-# Shared settings for the cycles pipeline. Every numbered stage sources this
-# file, so paths and the session list only ever get edited here.
+# Shared settings for the cycles pipeline
 
 # ---- people and places ----
 lab_root=/orcd/data/ldlewis/001
