@@ -11,8 +11,9 @@
 #   MNI -> subject average -> session T1 -> functional
 
 set -euo pipefail
-source "$(dirname "$0")/config.sh"
+source "${SLURM_SUBMIT_DIR:-$(dirname "$0")}/config.sh"
 load_fsl
+load_python
 load_ants
 
 mkdir -p "${atlas_dir}"

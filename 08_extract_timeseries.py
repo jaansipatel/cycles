@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/orcd/data/ldlewis/001/users/jpatel/software/cycles_venv/bin/python3
 #SBATCH -J extract_ts
 #SBATCH -t 02:00:00
 #SBATCH --mem=24G
@@ -17,7 +17,7 @@ import json, os, subprocess, glob
 import numpy as np
 import nibabel as nib
 from scipy.ndimage import binary_erosion
-import pritschet_core as pc
+import sys; sys.path.insert(0, os.environ.get("SLURM_SUBMIT_DIR", os.path.dirname(os.path.abspath(__file__)))); import pritschet_core as pc
 
 # ---- knobs ----
 wavelet_scales = [3, 4, 5, 6]   # the settled band, 0.017 to 0.278 Hz at this
@@ -33,7 +33,7 @@ csf_labels = (4, 43, 14, 15)    # the ventricles only, not CSF at the brain surf
 
 
 def cfg(*names):
-    here = os.path.dirname(os.path.abspath(__file__))
+    here = os.environ.get("SLURM_SUBMIT_DIR", os.path.dirname(os.path.abspath(__file__)))
     out = subprocess.check_output(
         ["bash", "-c", f"source {here}/config.sh >/dev/null 2>&1; " +
          " ".join(f'echo ${n};' for n in names)], text=True).splitlines()
@@ -103,8 +103,8 @@ def main():
             print(f"NOTE {ses} run-{run}: csf erosion emptied the mask, using uneroded")
         rp = np.loadtxt(os.path.join(sesdir, f"motion_run-{run}.txt"))
         nuis = np.column_stack([pc.friston24_ar1(rp),
-                                raw[wm].T.mean(axis=1),
-                                raw[csf].T.mean(axis=1)])
+                                np.nanmean(raw[wm].T, axis=1),
+                                np.nanmean(raw[csf].T, axis=1)])
 
         resid = pc.nuisance_regress(ts, nuis)
         clean = pc.modwt_band(resid, wavelet_scales)

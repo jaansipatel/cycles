@@ -9,7 +9,7 @@
 # the header fields the rest of the pipeline relies on.
 
 set -euo pipefail
-source "$(dirname "$0")/config.sh"
+source "${SLURM_SUBMIT_DIR:-$(dirname "$0")}/config.sh"
 
 ses_raw=$(session_from_array)                 # e.g. cycles006
 [[ -n $ses_raw ]] || { echo "no session at array index ${SLURM_ARRAY_TASK_ID:-unset} in ${sessions_file}"; exit 1; }

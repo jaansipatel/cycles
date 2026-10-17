@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/orcd/data/ldlewis/001/users/jpatel/software/cycles_venv/bin/python3
 #SBATCH -J qc
 #SBATCH -t 01:00:00
 #SBATCH --mem=8G
@@ -7,7 +7,9 @@
 
 # Stage 07: quality checks per session. Numbers first (head motion, signal
 # to noise, alignment score, atlas coverage), then pictures for eyeballing
-# the alignment. The generated summary table compares sessions across the cycle.
+# the alignment. Everything lands in one summary table row per run so
+# sessions can be compared across the cycle: a quality measure that itself
+# tracks cycle phase would contaminate the analysis, so catch it early.
 
 import json, os, subprocess, sys
 import numpy as np
@@ -19,7 +21,7 @@ import matplotlib.pyplot as plt
 
 def cfg(*names):
     # config.sh stays the single source of truth; read it through bash
-    here = os.path.dirname(os.path.abspath(__file__))
+    here = os.environ.get("SLURM_SUBMIT_DIR", os.path.dirname(os.path.abspath(__file__)))
     out = subprocess.check_output(
         ["bash", "-c", f"source {here}/config.sh >/dev/null 2>&1; " +
          " ".join(f'echo ${n};' for n in names)], text=True).splitlines()
@@ -41,6 +43,10 @@ def main():
     ses = "ses-" + ses_raw.removeprefix("cycles")
     out = os.path.join(qc_dir, subject, ses)
     os.makedirs(out, exist_ok=True)
+    # flat review folder: session-labeled copies of every figure, one scp for all days
+    review = os.path.join(qc_dir, "review")
+    os.makedirs(review, exist_ok=True)
+    day = "cycles" + ses.removeprefix("ses-")
 
     summary_path = os.path.join(qc_dir, "qc_summary.tsv")
     if not os.path.exists(summary_path):
@@ -56,7 +62,7 @@ def main():
         func = nib.load(os.path.join(sesdir, f"rrun-{run}_bold.nii.gz"))
         y = np.asarray(func.dataobj)
         mu, sd = y.mean(axis=3), y.std(axis=3)
-        brain = mu > np.percentile(mu, 75)          # rough brain mask, fine for this number
+        brain = np.isfinite(mu) & (mu > np.nanpercentile(mu, 75))   # rough brain mask; reslice rim is NaN
         tsnr = np.median(mu[brain] / np.maximum(sd[brain], 1e-6))
 
         atlas = np.asarray(nib.load(os.path.join(
@@ -76,6 +82,7 @@ def main():
         ax.set(xlabel="volume", ylabel="FD (mm)", title=f"{ses} run-{run}")
         for s in ("top", "right"): ax.spines[s].set_visible(False)
         fig.tight_layout(); fig.savefig(os.path.join(out, f"fd_run-{run}.png"), dpi=120)
+        fig.savefig(os.path.join(review, f"{day}_fd_run-{run}.png"), dpi=120)
         plt.close(fig)
 
         # atlas outlines drawn over the mean image, three slices
@@ -88,6 +95,7 @@ def main():
             ax.axis("off")
         fig.suptitle(f"{ses} run-{run}: atlas on mean EPI")
         fig.tight_layout(); fig.savefig(os.path.join(out, f"atlas_overlay_run-{run}.png"), dpi=120)
+        fig.savefig(os.path.join(review, f"{day}_atlas_overlay_run-{run}.png"), dpi=120)
         plt.close(fig)
 
         zero = np.where(counts == 0)[0] + 1

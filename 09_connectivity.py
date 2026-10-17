@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/orcd/data/ldlewis/001/users/jpatel/software/cycles_venv/bin/python3
 #SBATCH -J connectivity
 #SBATCH -t 00:20:00
 #SBATCH --mem=4G
@@ -7,13 +7,18 @@
 
 # Stage 09: connectivity per run, one 115 x 115 matrix of correlations
 # between region signals, transformed so values compare fairly across runs.
+# The paper used coherence instead, but stage 08 already restricted the
+# signals to the band coherence would have isolated, so plain correlation
+# was the settled choice and keeps the later graph work simpler.
+# Runs stay separate; a session average is also written for the hormone
+# models. Graph measures live in the analysis notebooks, not here.
 
 import json, os, subprocess
 import numpy as np
 
 
 def cfg(*names):
-    here = os.path.dirname(os.path.abspath(__file__))
+    here = os.environ.get("SLURM_SUBMIT_DIR", os.path.dirname(os.path.abspath(__file__)))
     out = subprocess.check_output(
         ["bash", "-c", f"source {here}/config.sh >/dev/null 2>&1; " +
          " ".join(f'echo ${n};' for n in names)], text=True).splitlines()

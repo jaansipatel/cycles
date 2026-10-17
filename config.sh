@@ -1,13 +1,14 @@
 #!/bin/bash
-# Shared settings for the cycles pipeline
+# Shared settings for the cycles pipeline. Every numbered stage sources this
+# file, so paths and the session list only ever get edited here.
 
 # ---- people and places ----
 lab_root=/orcd/data/ldlewis/001
-work_root=${lab_root}/users/jpatel/cycles                    
+work_root=${lab_root}/users/jpatel/cycles                    # everything we produce goes under here
 raw_root=${work_root}/nifty                                  # converted scans; stage 01 finds them with or without per-session folders
 bids_root=${work_root}/bids
 deriv_root=${work_root}/derivatives
-code_dir=${work_root}/code                                   # scripts + sessions.txt  here
+code_dir=${work_root}/code                                   # scripts + sessions.txt live here
 log_dir=${work_root}/logs
 
 # ---- subject / sessions ----
@@ -25,10 +26,10 @@ mb_factor=8
 # ---- tool env ----
 # pinned to what module avail reports on ORCD as of Sep 2026
 load_fsl()        { module use /orcd/compute/bcs/001/modulefiles; module load fsl/6.0.7; }
-load_freesurfer() { module use /orcd/compute/bcs/001/modulefiles; module load freesurfer/8.0.0; export SUBJECTS_DIR=${deriv_root}/freesurfer; }
+load_freesurfer() { module use /orcd/compute/bcs/001/modulefiles; module load freesurfer/8.0.0; export FREESURFER_HOME=${FREESURFER_HOME:-/orcd/compute/bcs/001/software/freesurfer/8.0.0-1}; local shellopts=$-; set +eu; source "${FREESURFER_HOME}/SetUpFreeSurfer.sh" >/dev/null; [[ $shellopts == *e* ]] && set -e; [[ $shellopts == *u* ]] && set -u; export SUBJECTS_DIR=${deriv_root}/freesurfer; }
 load_ants()       { module use /orcd/compute/bcs/001/modulefiles; module load ants/2.1.0-3.8bed08; }
 load_matlab()     { module use /orcd/compute/bcs/001/modulefiles; module load matlab/matlab-2023b; }
-spm_path=${lab_root}/software/spm12
+spm_path=/orcd/data/ldlewis/001/users/jpatel/software/spm12
 
 # ---- where each stage writes ----
 topup_dir=${deriv_root}/topup
@@ -47,3 +48,9 @@ session_from_array() {
 }
 
 mkdir -p "$log_dir"
+load_python() {
+# venv activate scripts can reference unset vars; same set +u dance as freesurfer
+set +u
+source /orcd/data/ldlewis/001/users/jpatel/software/cycles_venv/bin/activate
+set -u
+}

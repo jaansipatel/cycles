@@ -1,7 +1,8 @@
 """Signal-processing functions for the cycles pipeline, matched to the code
 behind Pritschet and Santander 2020 (tsantander/PritschetSantander2020_NI_Hormones).
 
-Four places where their code differs from what the paper says:
+Four places where their code differs from what the paper says, kept on
+purpose because the code is what produced the published results:
   1. the frequency band is isolated with wavelets, not a bandpass filter
   2. intensity scaling divides by the median, not the mean
   3. the detrending step hits the noise regressors too, not just the data
@@ -95,7 +96,9 @@ def grand_median_scale(data, mask, target=1000.0):
     """Scale a run so the median value inside the mask hits the target.
     Returns (scaled data, factor); reuse the factor on any copy of the same
     run that has to stay on the same scale."""
-    med = np.median(data[mask])
+    # SPM reslicing leaves NaN at FOV-edge voxels; keep them out of the median
+    vals = data[mask]
+    med = np.median(vals[np.isfinite(vals)])
     factor = target / med
     return data * factor, factor
 

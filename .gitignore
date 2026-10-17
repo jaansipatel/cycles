@@ -1,0 +1,4 @@
+logs/
+subset_jobids.txt
+*.pyc
+__pycache__/

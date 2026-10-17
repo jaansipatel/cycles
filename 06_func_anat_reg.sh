@@ -7,10 +7,12 @@
 
 # Stage 06: line each run's mean image up with that session's T1 using
 # bbregister, which snaps the fit to the gray/white boundary from the
-# FreeSurfer run. The result is saved in a format ANTs can chain in stage 06b.
+# FreeSurfer run and holds up better than plain intensity matching at this
+# resolution. The result is saved in a format ANTs can chain in stage 06b.
+# The functional data itself never gets resampled: the atlas comes to it.
 
 set -euo pipefail
-source "$(dirname "$0")/config.sh"
+source "${SLURM_SUBMIT_DIR:-$(dirname "$0")}/config.sh"
 load_freesurfer
 load_ants
 

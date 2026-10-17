@@ -15,7 +15,7 @@
 #   session T1 -> tpl:    ${ses}_to_tpl_1Warp / _0GenericAffine  (+ inverses)
 
 set -euo pipefail
-source "$(dirname "$0")/config.sh"
+source "${SLURM_SUBMIT_DIR:-$(dirname "$0")}/config.sh"
 load_ants
 
 mkdir -p "${ants_dir}"; cd "${ants_dir}"
@@ -31,8 +31,14 @@ while read -r ses_raw; do
 done < "$sessions_file"
 
 if [[ ! -f tpl_template0.nii.gz ]]; then
-    antsMultivariateTemplateConstruction2.sh -d 3 -o tpl_ \
-        -i 4 -g 0.2 -c 2 -j 16 -k 1 -t SyN -m CC -n 0 "${t1_list[@]}"
+    if [[ ${#t1_list[@]} -eq 1 ]]; then
+        # one session: the template of one brain is that brain. The 2.1.0
+        # script also misreads a single input as a 4D series and deletes it.
+        cp "${t1_list[0]}" tpl_template0.nii.gz
+    else
+        antsMultivariateTemplateConstruction2.sh -d 3 -o tpl_ \
+            -i 4 -g 0.2 -c 2 -j 16 -k 1 -t SyN -m CC -n 0 "${t1_list[@]}"
+    fi
 fi
 tpl=tpl_template0.nii.gz
 
