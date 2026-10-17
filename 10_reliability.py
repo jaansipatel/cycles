@@ -4,12 +4,9 @@
 #SBATCH --mem=4G
 #SBATCH -o logs/10_rel.out
 
-# Stage 10: connectome-level reliability over stage 09's FC matrices.
-# Two numbers the lab report leans on: how well the two same-day runs
-# agree (the single-run measurement floor), and how similar each day's
-# mean connectome is to every other day's (the stable backbone the
-# hormone analysis varies against). Runs once over every session in
-# sessions.txt, after all 09 tasks; not an array job.
+# Stage 10: calculate connectome-level reliability over stage 09's FC matrices.
+# This script checks how well the two same-day runs agree and how similar each day's
+# mean connectome is to every other day's.
 
 import json, os, subprocess, sys
 import numpy as np
